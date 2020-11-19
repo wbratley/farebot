@@ -1,0 +1,22 @@
+{
+  "name": "farebot",
+  "version": "1.0.0",
+  "description": "bot to calculate DUber fares",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wbratley/farebot.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/wbratley/farebot/issues"
+  },
+  "homepage": "https://github.com/wbratley/farebot#readme",
+  "dependencies": {
+    "discord.js": "^12.4.1"
+  }
+}

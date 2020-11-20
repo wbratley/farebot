@@ -1,5 +1,4 @@
 import * as discord from 'discord.js'
-import * as config from './config.json'
 
 const client = new discord.Client();
 const prefix = "!";
@@ -78,5 +77,5 @@ client.on("message", function(message : discord.Message){
     }
 })
 
-client.login(config.BOT_TOKEN);
+client.login(process.env.BOT_TOKEN);
 

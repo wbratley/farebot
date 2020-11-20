@@ -4,7 +4,7 @@
   "description": "bot to calculate DUber fares",
   "main": "index.js",
   "scripts": {
-    "test": "test"
+    "start": "node dist/index.js"
   },
   "repository": {
     "type": "git",
@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/wbratley/farebot#readme",
   "dependencies": {
+    "@types/node": "^14.14.9",
     "discord.js": "^12.4.1"
   }
 }

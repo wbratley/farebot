@@ -10,71 +10,90 @@ function getFare(warpCells: number): number{
 
 }
 
+function warpFareCommand(args: string[]): string{
+    if(args.length == 0) 
+    return
+        `One way fare calculations (use !warp-fare-rt for round trip):
+        **!warp-fare** <num warp cells>
+        **!warp-fare** <weight (t)> <distance (su)>
+        **!warp-fare** <ship weight (t)> <cargo weight (t)> <distance (su)>`;
+
+    if(args.length == 1) {
+        const fare = getFare(parseInt(args[0]));
+       return "Fare : " + fare + "ħ";    
+    }
+
+    if (args.length == 2) {
+        const weight = parseFloat(args[0]);
+        const distance = parseFloat(args[1]);
+        const cells = Math.ceil(weight * distance * 0.00025);
+        const fare = getFare(cells);
+        return "Fare : " + fare + "ħ";
+    }
+
+    if (args.length == 3) {
+        const weightShip = parseFloat(args[0]);
+        const weightCargo = parseFloat(args[1]);
+        const distance = parseFloat(args[2]);
+        const cells = Math.ceil((weightShip + weightCargo) * distance * 0.00025);
+        const fare = getFare(cells);
+        return "Fare : " + fare + "ħ";
+    }
+}
+
+function sendResponse(message: discord.Message, response: string){
+    message.channel.send(">>> " + response + " >>>");
+}
+
+function warpFareRoundTripCommand(args: string[]): string{
+    if(args.length == 0) 
+       return
+            `Round trip fare calculations:
+            **!warp-fare-rt** <num warp cells>
+            **!warp-fare-rt** <ship weight (t)> <distance (su)>
+            **!warp-fare-rt** <ship weight (t)> <cargo weight (t)> <distance (su)>`;
+
+    if(args.length == 1) {
+        const fare = getFare(parseInt(args[0])*2);
+        return "Fare : " + fare + "ħ";   
+    }
+
+    if(args.length == 2) {
+        
+        const weight = parseFloat(args[0]);
+        const distance = parseFloat(args[1]);
+        const cells = Math.ceil(weight * distance * 0.00025);
+        const fare = getFare(cells*2);
+        return "Fare : " + fare + "ħ";
+    }
+
+    if (args.length == 3) {
+        const weightShip = parseFloat(args[0]);
+        const weightCargo = parseFloat(args[1]);
+        const distance = parseFloat(args[2]);
+        const cellsThere = Math.ceil((weightShip + weightCargo) * distance * 0.00025);
+        const cellsBack = Math.ceil((weightShip) * distance * 0.00025);
+        const fare = getFare(cellsThere + cellsBack);
+        return "Fare : " + fare + "ħ";
+    }
+}
+
 client.on("message", function(message : discord.Message){
     if(message.author.bot) return;
     if(!message.content.startsWith(prefix)) return;
 
     const commandBody = message.content.slice(prefix.length);
-    const args = commandBody.split(' ');
+    const args = commandBody.split(' ').filter(e => e!=null);
     const command = args.shift().toLowerCase();
 
-    if(command == "fare"){
-
-        if(args.length == 0) message.reply("One way fare calculations (use !fare-rt for round trip)\n**!fare** <num warp cells>\n**!fare** <weight (t)> <distance (su)>\n**!fare** <ship weight (t)> <cargo weight (t)> <distance (su)>");
-
-        if(args.length == 1) {
-           
-            const fare = getFare(parseInt(args[0]));
-            message.reply("Fare : " + fare + "h")    
-        }
-
-        if (args.length == 2) {
-            const weight = parseFloat(args[0]);
-            const distance = parseFloat(args[1]);
-            const cells = Math.ceil(weight * distance * 0.00025);
-            const fare = getFare(cells);
-            message.reply("Fare : " + fare + "h");
-        }
-
-        if (args.length == 3) {
-            const weightShip = parseFloat(args[0]);
-            const weightCargo = parseFloat(args[1]);
-            const distance = parseFloat(args[2]);
-            const cells = Math.ceil((weightShip + weightCargo) * distance * 0.00025);
-            const fare = getFare(cells);
-            message.reply("Fare : " + fare + "h");
-        }
+    let response = null;
+    switch(command){
+        case 'warp-fare': response = warpFareCommand(args); break;
+        case 'warp-fare-rt': response = warpFareRoundTripCommand(args); break;
     }
 
-    if(command == "fare-rt"){
-
-        if(args.length == 0) message.reply("Round trip fare calculations\n**!fare-rt** <num warp cells>\n**!fare-rt** <ship weight (t)> <distance (su)>\n**!fare-rt** <ship weight (t)> <cargo weight (t)> <distance (su)>");
-
-        if(args.length == 1) {
-           
-            const fare = getFare(parseInt(args[0])*2);
-            message.reply("Fare : " + fare + "h")    
-        }
-
-        if(args.length == 2) {
-           
-            const weight = parseFloat(args[0]);
-            const distance = parseFloat(args[1]);
-            const cells = Math.ceil(weight * distance * 0.00025);
-            const fare = getFare(cells*2);
-            message.reply("Fare : " + fare + "h"); 
-        }
-
-        if (args.length == 3) {
-            const weightShip = parseFloat(args[0]);
-            const weightCargo = parseFloat(args[1]);
-            const distance = parseFloat(args[2]);
-            const cellsThere = Math.ceil((weightShip + weightCargo) * distance * 0.00025);
-            const cellsBack = Math.ceil((weightShip) * distance * 0.00025);
-            const fare = getFare(cellsThere + cellsBack);
-            message.reply("Fare : " + fare + "h");
-        }
-    }
+    if(response != null)
+        sendResponse(message, response);
 })
 
 client.login(process.env.BOT_TOKEN);
